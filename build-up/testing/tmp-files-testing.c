@@ -1,49 +1,42 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <strings.h>
-#define MAX_SIZE 1024
+#include <unistd.h>
+//Goal: use temporary files to run C-programs right from the terminal without having to make new files, compile, etc...
 
+//Idea is that it should work almost the same as "python3" command in terminal, but for C programs
+#define MAX_SIZE 2048
 
 int main(int argc, char **argv) {
 	
-	char buffer[MAX_SIZE] = {0};
-	size_t sizeRead = fread(buffer, 1, MAX_SIZE - 1, stdin);
-	
-	char template[] = "/tmp/c-residue/tmp.XXXXXX"; //exactly six X's are required while using mkstemp
-	//Also, template NEEDS to be static array like this
-	
-	int fd = mkstemp(template); //fd is same as "file-descriptor";
-	 //Basically, unique number assigned to each stream;
+	//Read user input
+	char buf[MAX_SIZE] = {0};
+	size_t bytesRead = fread(buf, 1, MAX_SIZE-1, stdin);
 
-	 /*
-	ex:
-	1. stdin --> 0
-	2. stdout --> 1
-	3. stderr --> 2
-	 */
+	char template[] = "/tmp/tmp.XXXXXX"; // It doesn't make its own directory
+	int fd = mkstemp(template); //make secure temp --> gives it a name and unique file descriptor
 
 	if (fd == -1) {
-		perror("Failure creating temporary file directory!");
-		exit(1);
-		unlink(template);
+		perror("Unable to create file descriptor");
+		return 1;
 		}
 	FILE *fp = fdopen(fd, "w");
-
+	
 	if (!fp) {
-		perror("Failure converting file descriptor to pointer!");
-		exit(1);
+		perror("Unable to open fd per indicated mode");	
+		return 1;
 		}
-		
-	fwrite(buffer, 1, strlen(buffer), fp);	
-	fclose(fp);
 
-	char *cmd_str = "cc -x c %s -o %s";
-	
-	sprintf(str, template);
-	
-	system(cmd_str);
-	
+	fwrite(buf, 1, bytesRead, fp);
 
+	char cmd_buf[100] = {0};
+	char *format = "cc -x c %s -o %s";
+	snprintf(cmd_buf, sizeof(cmd_buf)-1, format, template, template);	
+	system(cmd_buf);
+	system(template);
+	
+	unlink(template);
+
+	puts("DONE");
 
 	return 0;
 	}
