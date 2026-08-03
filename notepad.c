@@ -1,3 +1,14 @@
+/*
+
+LOTS OF IMPROVEMENTS NEED TO BE MADE:
+1. Using tree or some sort of data structure to simulate Ctrl + Z
+2. Memory safety needs to be made better
+3. Readability is not very good
+
+*/
+
+
+
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
