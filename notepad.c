@@ -4,7 +4,7 @@ LOTS OF IMPROVEMENTS NEED TO BE MADE:
 1. Using tree or some sort of data structure to simulate Ctrl + Z
 2. Memory safety needs to be made better
 3. Readability is not very good
-
+4. Dynamic memory allocation for array buffers when rendering data
 */
 
 
